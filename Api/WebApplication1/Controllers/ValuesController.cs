@@ -2,18 +2,25 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace WebApplication1.Controllers
+namespace App.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize]
+    [Route( "api/values" )]
     [ApiController]
+    
     public class ValuesController : ControllerBase
     {
+        readonly IServiceCollection services;
         // GET api/values
+        
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {
+            
             return new string[] { "value1", "value2" };
         }
 
