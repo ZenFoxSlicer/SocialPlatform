@@ -9,6 +9,6 @@ namespace App.Data.Entities
         public long CustomerId { get; set; }
         public Customer Customer { get; set; }
         public string VideoLink { get; set; }
-        public string Picture { get; set; }
+        public string Picture { get; set; } 
     }
 }
