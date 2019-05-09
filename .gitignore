@@ -260,3 +260,5 @@ paket-files/
 __pycache__/
 *.pyc
 /Api/App.Data/Migrations
+/Api/App.Api.sln
+/harry-potter/
