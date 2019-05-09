@@ -10,6 +10,6 @@ namespace App.Data.Entities
         public string LastName { get; set; }
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
-        public List<Products> Products { get; set; }
+        public List<Product> Products { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace App.Data.Entities
 {
-    public class Products : BaseEntity
+    public class Product : BaseEntity
     {
         public long CustomerId { get; set; }
         public Customer Customer { get; set; }
