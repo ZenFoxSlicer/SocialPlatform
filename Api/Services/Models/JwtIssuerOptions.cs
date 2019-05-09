@@ -41,7 +41,7 @@ namespace App.Service.Models
         /// <summary>
         /// Set the timespan the token will be valid for (default is 5 min/300 seconds)
         /// </summary>
-        public TimeSpan ValidFor { get; set; } = TimeSpan.FromMinutes( 5 );
+        public TimeSpan ValidFor { get; set; } = TimeSpan.FromMinutes( 200 );
 
         /// <summary>
         /// "jti" (JWT ID) Claim (default ID is a GUID)

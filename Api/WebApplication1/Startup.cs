@@ -59,6 +59,8 @@ namespace App.Api
                     b => b.MigrationsAssembly( "App.Data" ) ) );
 
             services.AddScoped<IJwtFactoryService , JwtFactoryService>();
+            services.AddScoped<RoleManager<IdentityRole>>();
+            services.AddScoped<IAuthService , AuthService>();
             //services.AddSingleton<IJwtFactoryService , JwtFactoryService>();
             var jwtAppSettingOptions = Configuration.GetSection( nameof( JwtIssuerOptions ) );
 
@@ -126,7 +128,16 @@ namespace App.Api
             services.AddMvc().SetCompatibilityVersion( CompatibilityVersion.Version_2_2 );
 
             services.AddAutoMapper();
+            
+            RegisterServices( services );
         }
+
+        public void RegisterServices( IServiceCollection services )
+        {
+            services.AddTransient<IAuthService , AuthService>();
+            services.AddTransient<IRegistrationService , RegistrationService>();
+        }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure( IApplicationBuilder app , IHostingEnvironment env )

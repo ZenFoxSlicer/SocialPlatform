@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.28307.438
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App.Api", "WebApplication1\App.Api.csproj", "{48F76E7B-1706-4F44-AAF0-4968F35B8D31}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App.Data", "App.Data\App.Data.csproj", "{144CB383-0EBA-4506-BCC6-7B52A72BC428}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App.Data", "App.Data\App.Data.csproj", "{144CB383-0EBA-4506-BCC6-7B52A72BC428}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App.Service", "Services\App.Service.csproj", "{A1C0AA8D-ECFC-4682-A4B0-C8C17EB43223}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App.Service", "Services\App.Service.csproj", "{A1C0AA8D-ECFC-4682-A4B0-C8C17EB43223}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
