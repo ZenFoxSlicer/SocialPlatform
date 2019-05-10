@@ -35,8 +35,7 @@ namespace App.Controllers
 
             if ( response == null )
             {
-                ModelState.AddModelError( "login_failure" , "Invalid username or password." );
-                return BadRequest( ModelState );
+                return BadRequest(new JsonResult("Invalid Login or Password"));
             }
             return new JsonResult( response );
         }

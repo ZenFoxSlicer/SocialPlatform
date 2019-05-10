@@ -128,7 +128,8 @@ namespace App.Api
             services.AddMvc().SetCompatibilityVersion( CompatibilityVersion.Version_2_2 );
 
             services.AddAutoMapper();
-            
+            services.AddCors();
+
             RegisterServices( services );
         }
 
@@ -173,6 +174,11 @@ namespace App.Api
             app.UseAuthentication();
             app.UseDefaultFiles();
             app.UseStaticFiles();
+            app.UseCors( builder => builder
+                         .AllowAnyOrigin()
+                         .AllowAnyMethod()
+                         .AllowAnyHeader()
+                         .AllowCredentials());
             app.UseMvc();
         }
     }
