@@ -56,7 +56,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     const s = this.userService.login(form.value).subscribe(data => {
       const remind = form.value.remind;
-
       setAuthToken(data.authToken, true);
       this.router.navigate([this.activatedRoute.snapshot.queryParams.returnUrl || '']);
   }, err => {

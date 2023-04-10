@@ -15,7 +15,8 @@ namespace App.Service.Dto
         }
         public void CreateForwardMap()
         {
-            CreateMap<RegistrationViewModel , AppIdentityUser>().ForMember( au => au.FirstName , map => map.MapFrom( vm => vm.Email ) );
+            CreateMap<RegistrationViewModel, AppIdentityUser>();
+            CreateMap<AppIdentityUser, UserModel>().ReverseMap();
         }
     }
 }

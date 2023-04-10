@@ -10,7 +10,7 @@ namespace App.Service.Helpers
         {
             public static class JwtClaimIdentifiers
             {
-                public const string Rol = "rol", Id = "id";
+                public const string Rol = "rol", Id = "id", UserName = "username", Email = "email", FullName = "fullname";
             }
 
             public static class JwtClaims

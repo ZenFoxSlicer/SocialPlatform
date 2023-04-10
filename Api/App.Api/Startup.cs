@@ -1,35 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using App.Data.Data;
-using System.Runtime.CompilerServices;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using App.Service.Models;
-using App.Service.Helpers;
 using AutoMapper;
-using App.Service.Services;
-using App.Service.Interfaces;
 using App.Data.Entities;
 using System.Net;
-using FluentValidation.AspNetCore;
-using App.Service.Models.Validators;
-
+using App.Service.Models;
+using App.Service.Interfaces;
+using App.Service.Services;
+using App.Service.Helpers;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using App.Service.Services.Email;
 
 namespace App.Api
 {
@@ -37,12 +29,12 @@ namespace App.Api
     {
         private readonly SymmetricSecurityKey _signingKey;
 
-        public Startup( IConfiguration configuration )
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
 
-            var secretKey = Configuration.GetSection( "JwtSecretKey" ).Value;
-            _signingKey = new SymmetricSecurityKey( Encoding.ASCII.GetBytes( secretKey ) );
+            var secretKey = Configuration.GetSection("JwtSecretKey").Value;
+            _signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
         }
 
         public IConfiguration Configuration
@@ -50,136 +42,144 @@ namespace App.Api
             get;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices( IServiceCollection services )
+        public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
-            services.AddDbContext<ApplicationDbContext>( options =>
-                options.UseNpgsql( Configuration.GetConnectionString( "DefaultConnection" ) ,
-                    b => b.MigrationsAssembly( "App.Data" ) ) );
+            services.AddMvc(options => options.EnableEndpointRouting = false);
 
-            services.AddScoped<IJwtFactoryService , JwtFactoryService>();
+
+            var connectionString = Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(connectionString));
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddIdentity<AppIdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
+            services.AddControllers(options =>
+            {
+                options.RespectBrowserAcceptHeader = true; // false by default
+            });
+
+            services.AddScoped<IJwtFactoryService, JwtFactoryService>();
             services.AddScoped<RoleManager<IdentityRole>>();
-            services.AddScoped<IAuthService , AuthService>();
-            //services.AddSingleton<IJwtFactoryService , JwtFactoryService>();
-            var jwtAppSettingOptions = Configuration.GetSection( nameof( JwtIssuerOptions ) );
+            services.AddScoped<IAuthService, AuthService>();
+            var jwtAppSettingOptions = Configuration.GetSection(nameof(JwtIssuerOptions));
 
-            // Configure JwtIssuerOptions
-            services.Configure<JwtIssuerOptions>( options =>
-            {
-                options.Issuer = jwtAppSettingOptions[ nameof( JwtIssuerOptions.Issuer ) ];
-                options.Audience = jwtAppSettingOptions[ nameof( JwtIssuerOptions.Audience ) ];
-                options.SigningCredentials = new SigningCredentials( _signingKey , SecurityAlgorithms.HmacSha256 );
-                options.ValidFor = TimeSpan.FromMinutes( Convert.ToInt64( jwtAppSettingOptions[ nameof( JwtIssuerOptions.Expiration ) ] ) );
-            } );
-            
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true ,
-                ValidIssuer = jwtAppSettingOptions[ nameof( JwtIssuerOptions.Issuer ) ] ,
+            var emailConfig = Configuration
+                .GetSection("EmailConfiguration")
+                .Get<EmailConfiguration>();
+            services.AddSingleton(emailConfig);
+            services.AddScoped<IEmailSender, EmailService>();
 
-                ValidateAudience = true ,
-                ValidAudience = jwtAppSettingOptions[ nameof( JwtIssuerOptions.Audience ) ] ,
-
-                ValidateIssuerSigningKey = true ,
-                IssuerSigningKey = _signingKey ,
-
-                RequireExpirationTime = false ,
-                ValidateLifetime = false ,
-                ClockSkew = TimeSpan.Zero
-            };
-
-            //services.AddAuthorization( options =>
-            //{
-            //    options.AddPolicy( "ApiUser" , policy => policy.RequireClaim( Constants.Strings.JwtClaimIdentifiers.Rol , Constants.Strings.JwtClaims.ApiAccess ) );
-            //} );
-
-            services.AddAuthentication( options =>
+            services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
-            } ).AddJwtBearer( configureOptions =>
+            })
+            .AddJwtBearer(configureOptions =>
             {
-                configureOptions.ClaimsIssuer = jwtAppSettingOptions[ nameof( JwtIssuerOptions.Issuer ) ];
-                configureOptions.TokenValidationParameters = tokenValidationParameters;
-                configureOptions.SaveToken = true;
-            } );
-
-            var builder = services.AddIdentityCore<AppIdentityUser>( o =>
-         {
-             o.Password.RequireDigit = true;
-             o.Password.RequireLowercase = false;
-             o.Password.RequireUppercase = true;
-             o.Password.RequireNonAlphanumeric = true;
-             o.Password.RequiredLength = 8;
-         } );
-
-            builder = new IdentityBuilder( builder.UserType , typeof( IdentityRole ) , builder.Services );
-            builder.AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
-
-            services.AddMvc()
-                .AddJsonOptions( options =>
+                configureOptions.TokenValidationParameters = new TokenValidationParameters
                 {
-                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                } )
-                .AddFluentValidation( fv => fv.RegisterValidatorsFromAssemblyContaining<RegistrationViewModelValidator>() );
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
 
-            services.AddMvc().SetCompatibilityVersion( CompatibilityVersion.Version_2_2 );
+                    ValidIssuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)],
+                    ValidAudience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)],
+                    IssuerSigningKey = _signingKey,
+                    RequireExpirationTime = false,
 
-            services.AddAutoMapper();
-            services.AddCors();
+                };
 
-            RegisterServices( services );
+                configureOptions.ClaimsIssuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
+                configureOptions.SaveToken = true;
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("ApiUser", policy => policy.RequireClaim(Constants.Strings.JwtClaimIdentifiers.Rol, Constants.Strings.JwtClaims.ApiAccess));
+            });
+
+            var builder = services.AddIdentityCore<AppIdentityUser>(o =>
+            {
+                o.Password.RequireDigit = true;
+                o.Password.RequireLowercase = false;
+                o.Password.RequireUppercase = true;
+                o.Password.RequireNonAlphanumeric = true;
+                o.Password.RequiredLength = 8;
+            });
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder
+                        .WithOrigins("http://localhost:4200")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                });
+            });
+
+            RegisterServices(services);
         }
 
-        public void RegisterServices( IServiceCollection services )
+        public void RegisterServices(IServiceCollection services)
         {
-            services.AddTransient<IAuthService , AuthService>();
-            services.AddTransient<IRegistrationService , RegistrationService>();
+            services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IPublicationService, PublicationService>();
+            services.AddTransient<IRegistrationService, RegistrationService>();
+            services.AddTransient<IFollowersService, FollowersService>();
         }
 
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure( IApplicationBuilder app , IHostingEnvironment env )
+        public void Configure(IApplicationBuilder app)
         {
-            if ( env.IsDevelopment() )
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+            app.UseMvc();
 
-            app.UseExceptionHandler(
-            builder =>
-            {
-                builder.Run(
-                  async context =>
-                  {
-                  context.Response.StatusCode = ( int )HttpStatusCode.InternalServerError;
-                  context.Response.Headers.Add( "Access-Control-Allow-Origin" , "*" );
+            app.UseCors();
 
-                  var error = context.Features.Get<IExceptionHandlerFeature>();
-                  if ( error != null )
-                  {
-                      context.Response.Headers.Add("Application-Error", error.Error.Message );
-                      context.Response.Headers.Add( "access-control-expose-headers" , "Application-Error" );
-                  }
-                  } );
-            } );
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseAuthorization();
 
             app.UseAuthentication();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+
+            //app.UseExceptionHandler(
+            //builder =>
+            //{
+            //    builder.Run(
+            //      context =>
+            //      {
+            //          context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            //          context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+
+            //          var error = context.Features.Get<IExceptionHandlerFeature>();
+            //          if (error != null)
+            //          {
+            //              context.Response.Headers.Add("Application-Error", error.Error.Message);
+            //              context.Response.Headers.Add("access-control-expose-headers", "Application-Error");
+            //          }
+            //          return Task.CompletedTask;
+            //      });
+            //});
+
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            app.UseCors( builder => builder
-                         .AllowAnyOrigin()
-                         .AllowAnyMethod()
-                         .AllowAnyHeader()
-                         .AllowCredentials());
-            app.UseMvc();
+            
         }
     }
 }
