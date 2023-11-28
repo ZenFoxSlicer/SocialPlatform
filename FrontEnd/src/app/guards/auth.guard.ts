@@ -3,7 +3,7 @@ import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from
 import { Observable } from 'rxjs';
 import { getAuthToken } from '../helpers/storage-helper';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class AuthGuard implements CanActivate {
   constructor( private router: Router) { }
   canActivate(
@@ -12,8 +12,7 @@ export class AuthGuard implements CanActivate {
       if (getAuthToken() != null) {
         return true;
       }
-
-      this.router.navigate(['/login'], { queryParams: { returnUrl: state.url }});
+      this.router.navigate(['/landing-page'], { queryParams: { returnUrl: state.url }});
       return false;
   }
 }

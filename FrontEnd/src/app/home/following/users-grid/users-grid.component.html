@@ -1,0 +1,29 @@
+<div fxLayout="column" fxLayoutAlign="start space-between" fxLayoutGap="10px">
+  <div fxLayout="row wrap" fxLayoutAlign="start center" fxLayoutGap="10px">
+    <div class="user-space" *ngFor="let user of users; let i=index">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title style="cursor: pointer;"
+          (click)="navigateToUser(user.userName)">{{user.firstName}} {{user.lastName}}</mat-card-title>
+        </mat-card-header>
+        <!-- <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu"> -->
+        <div fxLayout="column" fxLayoutAlign="center center" class="container-mini">
+          <mat-icon class="profile-background-mini"
+            [ngStyle]="{ 'color': getColor(user.firstName + ' ' + user.lastName) }">lens</mat-icon>
+          <label class="profile-letter-mini">{{getInitials(user.firstName, user.lastName)}}</label>
+        </div>
+        <!-- <mat-card-content>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni culpa necessitatibus alias assumenda illo
+          illum sit accusamus doloremque ipsa esse adipisci omnis, hic quaerat corporis quod quos quia rem perferendis.
+
+        </mat-card-content> -->
+        <mat-card-actions fxLayout="row" fxLayoutAlign="center center">
+          <button fxFlex="90" mat-raised-button color="primary" *ngIf="!user.currentUserIsFollowing"
+            (click)="follow(user)">Follow</button>
+          <button fxFlex="90" mat-raised-button color="secondary" *ngIf="user.currentUserIsFollowing"
+            (click)="unfollow(user)">Unfollow</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+<form *ngIf="loginForm" [formGroup]="loginForm" (ngSubmit)="login(loginForm)">
+  <mat-card class="mat-elevation-z0">
+    <mat-card-header>
+      <mat-card-title class="mat-h2">Login to App</mat-card-title>
+    </mat-card-header>
+    <mat-card-content fxLayout="column">
+      <mat-form-field class="full-width">
+        <input matInput placeholder="User Name/Email" formControlName="userName" required />
+      </mat-form-field>
+      <br />
+      <mat-form-field class="full-width">
+        <input matInput type="password" placeholder="Password" formControlName="password" required />
+      </mat-form-field>
+
+      <a mat-flat-button (click)="forgotPassword()">Forgot Password</a>
+    </mat-card-content>
+    <mat-card-actions fxLayout="row" fxLayoutAlign="space-between center">
+      <button mat-raised-button color="primary" type="button" (click)="close()">
+        Close
+      </button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="!loginForm.valid">
+        Login
+      </button>
+    </mat-card-actions>
+    <div *ngIf="errors" class="alert alert-danger" role="alert">
+      <strong>Oops!</strong> {{ errors }}
+    </div>
+  </mat-card>
+</form>

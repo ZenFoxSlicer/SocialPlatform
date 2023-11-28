@@ -1,0 +1,12 @@
+<div fxFlex="100" fxLayoutAlign="center center">
+  <div fxFlex="60">
+    <mat-tab-group mat-align-tabs="center">
+      <mat-tab label="Followers">
+        <app-users-grid [users]="followers"></app-users-grid>
+      </mat-tab>
+      <mat-tab label="Following">
+        <app-users-grid [users]="following"></app-users-grid>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>

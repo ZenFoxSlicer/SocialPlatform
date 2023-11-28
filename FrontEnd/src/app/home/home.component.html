@@ -1,3 +1,57 @@
-<p>
-  home works!
-</p>
+<mat-sidenav-container class="mat-side-nav-container-style">
+  <mat-sidenav fxFlex="330px" mode="side" [(opened)]="opened" class="menu" [fixedInViewport]="false" fxLayout="column"
+    fxLayoutGap="10px">
+    <mat-nav-list>
+        <mat-list-item [routerLink]="[ '/home/dashboard' ]">
+          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+            <mat-icon color=primary>dashboard</mat-icon>
+            <span>Dashboard</span>
+          </div>
+        </mat-list-item>
+
+        <mat-list-item [routerLink]="[ '/home/my-posts' ]">
+          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+            <mat-icon color=primary>chat_bubble</mat-icon>
+            <span>My Posts</span>
+          </div>
+        </mat-list-item>
+
+        <mat-list-item [routerLink]="[ '/home/following' ]">
+          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+            <mat-icon color=primary>people</mat-icon>
+            <span>Following</span>
+          </div>
+        </mat-list-item>
+
+        <mat-list-item [routerLink]="'/blogs/' + getUserId">
+          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+            <mat-icon color=primary>forum</mat-icon>
+            <span>My Blog</span>
+          </div>
+        </mat-list-item>
+
+      <!-- <a [routerLink]="[ '/home/table' ]">
+        <mat-list-item>
+          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+            <mat-icon color=primary>table_chart</mat-icon>
+            <span>Table</span>
+          </div>
+        </mat-list-item>
+      </a>
+      <a [routerLink]="[ '/home/form' ]">
+        <mat-list-item>
+          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+            <mat-icon color=primary>description</mat-icon>
+            <span>Form</span>
+          </div>
+        </mat-list-item>
+      </a>-->
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content fxFlex="100">
+    <button mat-icon-button (click)="toggleSideNav()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

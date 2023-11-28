@@ -1,0 +1,38 @@
+<div fxFlex="100" fxLayoutAlign="center center">
+  <div fxFlex="60" fxLayout="column" fxLayoutAlign="space-between center" fxLayoutGap="10px">
+
+    <mat-form-field fxFlexAlign="stretch" appearance="outline" fxFlexOffset="10px">
+      <mat-label>Search</mat-label>
+      <input matInput placeholder="Type something" [(ngModel)]="searchString">
+      <button mat-icon-button matSuffix (click)="search()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </mat-form-field>
+    <button mat-raised-button (click)="openAddPost()" color="primary" fxFlexAlign="stretch">
+      <mat-icon>add</mat-icon>
+    </button>
+    <mat-card fxFlexAlign="stretch" *ngFor="let item of data; let i=index;">
+      <mat-card-header>
+        <mat-card-title>{{item.title}}</mat-card-title>
+        <mat-card-subtitle>
+          <mat-chip-listbox aria-label="labels">
+            <mat-chip *ngFor="let label of getLabels(item)">
+              #{{label}}
+            </mat-chip>
+          </mat-chip-listbox>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>{{item.body}}</mat-card-content>
+      <mat-card-actions fxLayout="row" fxLayoutAlign="space-between start" fxFlex="100">
+        <button mat-button disabled>published on {{item.dateTime | date:'dd/MM/yyyy HH:mm:ss'}}</button>
+        <div fxLayout="row" fxLayoutGap="10px">
+          <button mat-mini-fab (click)="editPublication(item)">
+            <mat-icon>edit</mat-icon></button>
+          <button mat-mini-fab color="warn" (click)="delete(item.id, i)"><mat-icon>delete</mat-icon></button>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+    <mat-paginator fxFlexAlign="stretch" [length]="paginatedResponse.totalData" aria-label="Select page">
+    </mat-paginator>
+  </div>
+</div>

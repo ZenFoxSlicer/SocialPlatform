@@ -1,16 +1,22 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { UserService } from './shared/services/user.service';
-import { HttpClientModule } from '@angular/common/http';
 import { ConfigService } from './shared/services/config.service';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+import { BrowserModule } from '@angular/platform-browser';
+import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatInputModule, MatSnackBarModule, MatButtonModule,
-  MatIconModule, MatDatepickerModule, MatCardModule } from '@angular/material';
-import { FlexLayoutModule } from '@angular/flex-layout';
+import { UserService } from './shared/services/user.service';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { FakeBackendInterceptor } from './interceptors/fake-back-end-interceptor.interceptor';
+import { AddAuthTokenHeaderInterceptor } from './interceptors/add-token.interceptor';
+import { PublicationService } from './shared/services/publication.service';
+import { CommonModule } from '@angular/common';
+import { MaterialModule } from './shared/material-module/materiale.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { LoginDialogComponent } from './landing-page/login-dialog/login-dialog.component';
+import { RegistrationFormComponent } from './landing-page/registration-form/registration-form.component';
+import { FollowingService } from './shared/services/following.service';
 
 
 @NgModule({
@@ -19,22 +25,28 @@ import { FlexLayoutModule } from '@angular/flex-layout';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule,
-    MatInputModule,
-    MatSnackBarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDatepickerModule,
-    BrowserAnimationsModule,
-    MatCardModule,
-    ReactiveFormsModule,
-    FlexLayoutModule,
+    CommonModule,
+    MaterialModule,
   ],
+  entryComponents: [LoginDialogComponent, RegistrationFormComponent],
   providers: [
-    UserService,
     ConfigService,
+    UserService,
+    PublicationService,
+    FollowingService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: FakeBackendInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AddAuthTokenHeaderInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

@@ -1,0 +1,41 @@
+<form *ngIf="publicationForm" [formGroup]="publicationForm" (ngSubmit)="submit(publicationForm)">
+  <mat-card class="mat-elevation-z0">
+    <mat-card-header>
+      <mat-card-title class="mat-h2">Create/Edit a post</mat-card-title>
+    </mat-card-header>
+    <mat-card-content fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px" fxFlex="100">
+      <mat-form-field fxFlex appearance="outline" fxFlex="100" fxFlexAlign="stretch">
+        <mat-label>Title</mat-label>
+        <input matInput placeholder="Your title here" formControlName="title" required>
+      </mat-form-field>
+      <mat-form-field appearance="outline" fxFlexAlign="stretch">
+        <mat-label>Labels</mat-label>
+        <mat-chip-grid #chipGrid aria-label="Enter keywords">
+          <mat-chip-row *ngFor="let label of labels" (removed)="removeKeyword(label)">
+            #{{label}}
+            <button matChipRemove aria-label="'remove ' + label">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip-row>
+        </mat-chip-grid>
+        <input placeholder="New label..." required [matChipInputFor]="chipGrid"
+          (matChipInputTokenEnd)="add($event)" />
+      </mat-form-field>
+
+      <mat-form-field fxFlex="100" appearance="outline" fxFlexAlign="stretch">
+        <mat-label>Body</mat-label>
+        <textarea matInput placeholder="Ex. It makes me feel..." rows="10" formControlName="body" required></textarea>
+      </mat-form-field>
+      <div *ngIf="errors" class="alert alert-danger" role="alert">
+        <strong>Oops!</strong> {{ errors }}
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions align="end" fxLayout="row" fxLayoutAlign="space-between center">
+      <button mat-raised-button color="warn" type="button" (click)="closeWindow()">Cancel</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="!publicationForm.valid">
+        Submit
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</form>

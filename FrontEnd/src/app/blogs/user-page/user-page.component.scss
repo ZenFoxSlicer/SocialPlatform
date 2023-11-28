@@ -1,0 +1,42 @@
+.profile-data-zone {
+  min-width: 250px;
+  max-width: calc(100vw - 90%);
+}
+
+:root {
+  --my-color: red;
+}
+
+.profile-background {
+  font-size: 250px;
+  width: 250px;
+  height: 250px;
+  position: absolute;
+}
+
+.profile-letter {
+  font-size: 100px;
+  z-index: 3;
+}
+
+.container {
+  width: 250px;
+  height: 250px;
+}
+
+.profile-background-mini {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+}
+
+.profile-letter-mini {
+  font-size: 15px;
+  z-index: 3;
+}
+
+.container-mini {
+  width: 40px;
+  height: 40px;
+}

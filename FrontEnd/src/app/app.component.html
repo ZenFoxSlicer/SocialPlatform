@@ -1,0 +1,23 @@
+<mat-toolbar color="primary" fxFLex>
+  <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+    <div fxLayout="row" fxLayoutAlign="center center" style="cursor: pointer;" [routerLink]="[ '/home' ]">
+      <mat-icon>library_books</mat-icon>
+      <mat-label>{{title}}</mat-label>
+    </div>
+    <div>
+      <button mat-button (click)="openRegisterPopUp()" *ngIf="!userIsLoggedIn">
+        <mat-icon>assignment</mat-icon> Register
+      </button>
+      <button mat-button (click)="openLoginPopUp()" *ngIf="!userIsLoggedIn">
+        <mat-icon>account_circle</mat-icon> Login
+      </button>
+      <button mat-button [routerLink]="[ 'home/user' ]" *ngIf="userIsLoggedIn">
+        <mat-icon>perm_identity</mat-icon> User
+      </button>
+      <button mat-button (click)="logout()" *ngIf="userIsLoggedIn">
+        <mat-icon>exit_to_app</mat-icon> Logout
+      </button>
+    </div>
+  </div>
+</mat-toolbar>
+<router-outlet></router-outlet>

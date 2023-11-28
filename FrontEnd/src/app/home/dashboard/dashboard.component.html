@@ -1,0 +1,77 @@
+<div fxLayout="row" fxLayoutAlign="center stretch" fxLayoutGap="20px">
+  <div fxFlex="70" fxLayout="column" fxLayoutAlign="start center" fxLayoutGap="10px" *ngIf="data">
+    <div class="user-space" *ngFor="let item of data; let i = index" fxFlexAlign="stretch">
+      <mat-card class="example-card">
+        <mat-card-header>
+          <div mat-card-avatar>
+            <div fxLayout="column" fxLayoutAlign="center center" class="container-mini">
+              <mat-icon class="profile-background-mini"
+                [ngStyle]="{ 'color': getColor(item.author.firstName + ' ' + item.author.lastName) }">lens</mat-icon>
+              <label class="profile-letter-mini">{{getInitials(item.author.firstName, item.author.lastName)}}</label>
+            </div>
+          </div>
+          <mat-card-title>{{item.author.firstName + ' ' + item.author.lastName }}</mat-card-title>
+          <mat-card-subtitle>{{item.dateTime | date:'dd/MM/yyyy HH:mm:ss'}}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>{{item.body}}</mat-card-content>
+        <mat-card-actions fxLayout="column" fxLayoutAlign="start start" fxLayoutGap="15px">
+          <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+            <button mat-button (click)="likePost(item)" *ngIf="!item.isLikedByCurrentUser"><mat-icon>thumb_up</mat-icon>
+              Like</button>
+            <button mat-button color="primary" (click)="unlikePost(item)"
+              *ngIf="item.isLikedByCurrentUser"><mat-icon>thumb_up</mat-icon> Like</button>
+            <mat-label>{{item.likes.length}}</mat-label>
+            <button mat-button (click)="openComments(i)"><mat-icon> comment</mat-icon> Comment</button>
+            <mat-label>{{item.comments.length}}</mat-label>
+          </div>
+          <mat-expansion-panel hideToggle class="mat-elevation-z0" fxFlexAlign="stretch">
+            <div fxLayout="column" fxFlex fxLayoutGap="15px">
+              <div *ngFor="let comment of item.comments; let j = index">
+                <mat-card class="mat-elevation-z0">
+                  <mat-card-header>
+                    <div mat-card-avatar>
+                      <div fxLayout="column" fxLayoutAlign="center center" class="container-mini">
+                        <mat-icon class="profile-background-mini"
+                          [ngStyle]="{ 'color': getColor(comment.authorName) }">lens</mat-icon>
+                        <label class="profile-letter-mini">{{getCommentInitials(comment.authorName)}}</label>
+                      </div>
+                    </div>
+                    <mat-card-title style="cursor: pointer;"
+                      (click)="navigateToUser(comment.authorUserName)">{{comment.authorName}}</mat-card-title>
+                    <mat-card-subtitle>{{comment.dateTime | date:'dd/MM/yyyy HH:mm:ss'}}</mat-card-subtitle>
+                    <div fxFlex></div>
+                    <div *ngIf="canDeleteComment(comment)">
+                      <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>more_vert</mat-icon></button>
+                      <mat-menu #menu="matMenu">
+                        <button mat-menu-item (click)="deleteComment(comment, j)"><mat-icon>delete</mat-icon>
+                          Delete</button>
+                      </mat-menu>
+                    </div>
+
+                  </mat-card-header>
+                  <mat-card-content>
+                    {{comment.body}}
+                  </mat-card-content>
+                </mat-card>
+              </div>
+              <mat-form-field fxFlex appearance="outline" fxFlex="100" #inputRefs fxFlexOffset="10px">
+                <mat-label>Insert a comment</mat-label>
+                <input matInput>
+                <button mat-icon-button matSuffix (click)="postComment(i)">
+                  <mat-icon>send</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+          </mat-expansion-panel>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <div fxLayout="row" fxLayoutAlign="center center" fxFlexAlign="stretch">
+      <button fxFlex="60" mat-raised-button color="primary" [disabled]="totalData == data.length"
+        (click)="seeMore()">See more</button>
+    </div>
+  </div>
+
+
+</div>
