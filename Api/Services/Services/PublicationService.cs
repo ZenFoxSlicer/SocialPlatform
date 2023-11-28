@@ -120,15 +120,24 @@ namespace App.Service.Services
                 .Include(x => x.Likes).ThenInclude(x => x.Author)
                 .ToListAsync();
 
-            var currentUserLikes = await context.Likes
+            var currentUserLikes = new List<Like>();
+
+            if (jwtSecurityToken != null)
+            {
+                currentUserLikes = await context.Likes
                 .Where(x => list.Select(x => x.Id).Contains(x.PublicationId) && x.AuthorId.Equals(JwtFactoryService.GetClaimValue(jwtSecurityToken, JwtClaimIdentifiers.Id)))
                 .ToListAsync();
+            }
+            
 
             var modelList = mapper.Map<IEnumerable<PublicationExternalModel>>(list);
 
-            foreach (var userLike in currentUserLikes)
+            if (jwtSecurityToken != null)
             {
-                modelList.First(x => x.Id.Equals(userLike.PublicationId.ToString())).IsLikedByCurrentUser = true;
+                foreach (var userLike in currentUserLikes)
+                {
+                    modelList.First(x => x.Id.Equals(userLike.PublicationId.ToString())).IsLikedByCurrentUser = true;
+                }
             }
 
             return new PaginatedResponse<PublicationExternalModel>

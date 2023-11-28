@@ -14,10 +14,6 @@ namespace App.Data.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
-
-        //public virtual DbSet<Customer> Customers { get; set; }
-        //public virtual DbSet<Product> Products { get; set; }
-        //public virtual DbSet<Employee> Employees { get; set; }
         public virtual DbSet<AppIdentityUser> AspNetUsers { get; set; }
         public virtual DbSet<Publication> Publications { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }

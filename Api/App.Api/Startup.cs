@@ -8,18 +8,15 @@ using Microsoft.Extensions.DependencyInjection;
 using App.Data.Data;
 using AutoMapper;
 using App.Data.Entities;
-using System.Net;
 using App.Service.Models;
 using App.Service.Interfaces;
 using App.Service.Services;
 using App.Service.Helpers;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using App.Service.Services.Email;
 
@@ -156,27 +153,7 @@ namespace App.Api
             {
                 endpoints.MapControllers();
             });
-
-
-            //app.UseExceptionHandler(
-            //builder =>
-            //{
-            //    builder.Run(
-            //      context =>
-            //      {
-            //          context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            //          context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-
-            //          var error = context.Features.Get<IExceptionHandlerFeature>();
-            //          if (error != null)
-            //          {
-            //              context.Response.Headers.Add("Application-Error", error.Error.Message);
-            //              context.Response.Headers.Add("access-control-expose-headers", "Application-Error");
-            //          }
-            //          return Task.CompletedTask;
-            //      });
-            //});
-
+            
             app.UseDefaultFiles();
             app.UseStaticFiles();
             

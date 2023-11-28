@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
 using App.Service.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 
 namespace App.Api.Controllers
 {
@@ -31,7 +32,8 @@ namespace App.Api.Controllers
 
             try
             {
-                var response = await publicationService.GetPublicationExternalList(paginatedRequest, userName, JwtFactoryService.GetToken(Request));
+                var response = await publicationService.GetPublicationExternalList(paginatedRequest, userName, 
+                    !Request.Headers["Authorization"].IsNullOrEmpty() ? JwtFactoryService.GetToken(Request) : null);
 
                 return new JsonResult(response);
             }
